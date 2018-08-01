@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+		<title>Web Programming Week 1 Exam - Official Solution</title>
+
+		<!-- Bootstrap -->
+		<link href="/static/css/bootstrap.css" rel="stylesheet">
+	</head>
+	<body style="background: #90EE90">
+		<div class="row">
+			<div class="row">
+				<div class="col-md-8"></div>
+				<div class="col-md-2" >
+					<p id="cart_value"></p>
+			
+				</div>
+				<div class="col-md-2"><a href="/show_books" id="ll">logout</a></div>
+			</div>
+			<div class="row"><center><h2>Problem Solving Books</h2></center></div>
+
+			<div class='row'>
+				<div class="col-md-2"></div>
+				<div class="col-md-8">
+					<div class="row">
+						<div class="col-md-5">
+							<div class="row">
+								<div class="col-md-4">
+									<img id="image" src="" alt="img" class="img-responsive img-rounded">
+								</div>
+								<div class="col-md-8">
+									<h4 id="author">author</h4>
+									<h4 id="price">price</h4>
+									<h4 id="publisher">publisher</h4>
+									<h4 id="year">year</h4>
+								</div>
+							</div>
+							<div class="row">
+								<p></p>
+									<button id="prevBtn" type="button" class="btn btn-primary" onclick="prev()">Previous</button>
+									<button id="nextBtn" type="button" class="btn btn-primary" onclick="next()">Next</button>
+							</div>
+							<div class="row">
+								<p></p>
+								<button id="cart" type="button" class="btn btn-primary" onclick="check()">Add to cart</button>
+
+							</div>
+						</div>
+						<div class="col-md-7">
+							<div class="row">
+								<h2 id="booktitle">booktitle</h2>
+							</div>
+							<div class="row">
+								<p id="description">description</p>
+							</div>
+							<div class="row">
+								<h2>
+									<a href="" target="_blank" id="link">More info</a>
+								</h2>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2"></div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			var obj=""
+			var URL="{{url_for('static',filename='problem-solving-books.json')}}";
+			var req= new XMLHttpRequest();
+			req.open('GET',URL);
+			req.responseType='text';
+			req.send();
+			req.onload=function(){
+				obj=JSON.parse(req.response);
+				display(0);
+				setButtons();
+			
+			}
+			var s=0;
+			var dictionary={};
+			var y='http://www.freepngimg.com/download/cart/8-2-cart-picture.png';
+
+			document.getElementById("cart_value").innerHTML='<span><img src='+y+' alt="cart value" width=30px height=30px> '+s+' items </span';
+ 			function display(id){
+ 				
+ 				document.getElementById("booktitle").innerHTML = obj.items[id].volumeInfo.title;
+		 		document.getElementById("description").innerHTML = obj.items[id].volumeInfo.description;
+		 		document.getElementById("publisher").innerHTML = obj.items[id].volumeInfo.publisher;
+		 		document.getElementById("year").innerHTML = obj.items[id].volumeInfo.publishedDate;
+		 		document.getElementById("author").innerHTML = obj.items[id].volumeInfo.authors;
+		 		document.getElementById("image").src = obj.items[id].volumeInfo.imageLinks.smallThumbnail;
+
+		 		var retail=obj.items[id]["saleInfo"]["listPrice"];
+
+		 		if(retail){
+
+		 			document.getElementById("price").innerHTML = obj.items[id].saleInfo.listPrice.amount;
+		 			document.getElementById("cart").disabled = false;
+		 		}
+		 		else{
+		 			document.getElementById("price").innerHTML ="Not Available";
+		 			document.getElementById("cart").disabled = true;
+
+		 		}
+
+		 		document.getElementById("link").href = obj.items[id].volumeInfo.previewLink;
+ 			}
+		 	
+			var currentBook = 0
+			
+			function setButtons() {
+				var movieCnt=obj.items.length;
+				
+				// disable prev when it is the first movie
+				if (currentBook == 0)
+					document.getElementById("prevBtn").disabled = true;
+
+				// disable next when the current movie is the last one in the list 
+				if (currentBook == movieCnt - 1)
+					document.getElementById("nextBtn").disabled = true;
+
+				// enable the prev button when the current movie is not the first one
+				if (currentBook > 0)
+					document.getElementById("prevBtn").disabled = false;
+
+				// enable the next button when the current movie is not the last one
+				if (currentBook < movieCnt - 1)
+					document.getElementById("nextBtn").disabled = false;
+			}
+		/* call init to disbale the buttons */
+			
+
+			// show the next movie
+			function next() {
+				display(++currentBook);
+				setButtons();
+			}
+
+			// show the previous movie
+			function prev() {
+				display(--currentBook);
+				setButtons();
+			}
+			var sum=0;
+			function check(){
+				var temp=0;
+				var temp1=0;
+				if(currentBook in dictionary){
+					temp=dictionary[currentBook];
+					if(temp>=3){
+						document.getElementById("cart").disabled = true;
+					}
+					else{
+						s=s+1;
+	       				temp=temp+1;
+      					dictionary[currentBook]=temp;
+      					sum+=obj.items[currentBook].saleInfo.listPrice.amount;
+					}
+
+				}
+				else{
+					s=s+1;
+					temp1=temp1+1;
+					dictionary[currentBook]=temp1;
+					sum+=obj.items[currentBook].saleInfo.listPrice.amount;
+
+				}
+				document.getElementById("cart_value").innerHTML='<p><span><img src='+y+' alt="cart value" width=30px height=30px> '+s+' items </span><h4>Total  '+sum+' </h4> <a href="/cart/'+sum+'/'+s+'">viewcart</a></p>';
+			}
+			
+		</script>
+	</body>
+</html>

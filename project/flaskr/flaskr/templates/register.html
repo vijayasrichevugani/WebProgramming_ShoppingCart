@@ -1,0 +1,35 @@
+<html>
+<head>
+<title>Registration</title>
+<link rel="stylesheet" href={{ url_for('static', filename='css/style.css') }} />
+</head>
+<body style="background: #ce93d8">
+<form action="/register" method="POST">
+    <p>Email: <input type="email" name="email"></p>
+
+    <P>Password: <input type="password" name="password" id="password" required></p>
+    <p>First Name: <input type="text" name="name"></p>
+    <p>Address: <input type="text" name="address"></p>
+    <p>State: <input type="text" name="state"></p>
+    <p>Phone Number: <input type="text" name="phone"></p>
+
+    <p><input type="submit" value="Register"></p>
+    <a href="/loginForm" style="color: blue">Login here</a>
+</form>
+</body>
+<script type="text/javascript">
+	function validate() {
+    var pass = document.getElementById("password").value;
+    var cpass = document.getElementById("cpassword").value;
+    if (pass == cpass) {
+        return true;
+    } else {
+        alert("Passwords do not match");
+        return false;
+    }
+}
+</script>
+</html>
+
+
+
